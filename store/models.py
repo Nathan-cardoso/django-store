@@ -1,5 +1,14 @@
 from django.db import models
 
+
+class Collection(models.Model):
+
+    title = models.CharField(
+        max_length=255
+    )
+
+
+
 class Product(models.Model):
 
     title = models.CharField(
@@ -15,8 +24,15 @@ class Product(models.Model):
 
     inventory = models.IntegerField()
 
-    last_update = models.DateTimeField(auto_now=True)
+    last_update = models.DateTimeField(
+    auto_now=True
+    )
 
+
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.PROTECT
+    )
 
 
 class Customer(models.Model):
@@ -58,25 +74,6 @@ class Customer(models.Model):
     )
 
 
-class Adress(models.Model):
-
-    street = models.CharField(
-        max_length=255
-
-    )
-
-    city = models.CharField(
-        max_length=255
-    )
-
-    customer = models.OneToOneField(
-        Customer,
-        on_delete=models.CASCADE,
-        primary_key=True
-    )
-
-
-
 class Order(models.Model):
 
     PAYMENTSTATUS_PENDING = 'P'
@@ -99,4 +96,66 @@ class Order(models.Model):
         default=PAYMENTSTATUS_PENDING
     )
 
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.PROTECT
+    )
 
+
+class OrderItem(models.Model):
+
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.PROTECT
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT
+    )
+
+    quantity = models.PositiveSmallIntegerField()
+
+    unit_price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2
+    )
+
+
+class Adress(models.Model):
+
+    street = models.CharField(
+        max_length=255
+
+    )
+
+    city = models.CharField(
+        max_length=255
+    )
+
+    customer = models.OneToOneField(
+        Customer,
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+
+
+class Cart(models.Model):
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+
+    quantity = models.PositiveSmallIntegerField()
