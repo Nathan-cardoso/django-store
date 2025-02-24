@@ -1,12 +1,26 @@
 from django.db import models
 
 
+class Promotion(models.Model):
+    description = models.CharField(
+        max_length=255
+    )
+
+    discount = models.FloatField()
+
+
 class Collection(models.Model):
 
     title = models.CharField(
         max_length=255
     )
 
+    feature_product = models.ForeignKey(
+        'Product',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+'
+    )
 
 
 class Product(models.Model):
@@ -28,10 +42,14 @@ class Product(models.Model):
     auto_now=True
     )
 
-
     collection = models.ForeignKey(
         Collection,
         on_delete=models.PROTECT
+    )
+
+    promotions = models.ManyToManyField(
+        Promotion,
+        related_name="products"
     )
 
 
